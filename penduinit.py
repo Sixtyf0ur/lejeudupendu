@@ -14,19 +14,20 @@ def lejeudupenduinit():
     # score=0
     # table={}
     # mot=""
-    while 1:
+    while True:
         
         qYno = input("Type 'Q' to quit: ")
         if qYno.upper()=="Q":
             break
         
-        joueur = ljp.playerpromt()
+        joueur = ljp.playerprompt()
         chemin,bln = ljp.verifypath()
-        table = ljp.getplayerdata(joueur,bln)
-        table = ljp.singleplayerscore(joueur, table)
-        ljp.wplayersdata(joueur,chemin)
+        table = ljp.singleplayerscore(joueur, ljp.getplayersdata(chemin,bln))
         mot = ljp.lemot()
         score = ljp.lejeu(mot)
         table = ljp.updatescore(joueur, table, score)
-        
+        ljp.wplayersdata(chemin,table)
     return None
+
+if __name__=="__main__":
+    lejeudupenduinit()

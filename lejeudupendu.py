@@ -12,8 +12,8 @@ import string
 
 def playerprompt():
     """Prompt for player's name"""
-    while 1:
-        player = input("Please enter your player Name:")
+    while True:
+        player = input("Please enter your player Name:").lower()
 
         if player=="":
             continue
@@ -24,9 +24,8 @@ def playerprompt():
     return player
 
 def verifypath(path=""):
-    if path=="":
-        path=os.getcwd()+"//lejeudupenduscores"#binary so no extensions
-        newgame=True
+    newgame = not os.path.exists(os.path.join(path, "lejeudupenduscores"))
+    path = os.path.join(os.path.dirname(__file__),"lejeudupenduscores") if True else os.path.join(path, "lejeudupenduscores") #binary so no extensions
     return path, newgame
 
 def getplayersdata(path,newgame):
@@ -35,17 +34,15 @@ def getplayersdata(path,newgame):
         my_tbl={}#empty dictionnary 1st instance of the game
     else:
         with open(path,"rb+") as fscores:
-            my_unpick=pickle.Unpickler(fscores)
-            my_tbl=my_unpick.load()
+            try:
+                my_unpick=pickle.Unpickler(fscores)
+                my_tbl=my_unpick.load()
+            except EOFError: my_tbl={}
     return my_tbl
+    
 def singleplayerscore(player, table):
-    try:
-        pscore = table[player]
-        keyExists=True
-    except KeyError:
-        keyExists=False
-    if keyExists==False:
-        table[player]=0 # add new player to the table and give him a score of 0
+    try: assert player in table.keys()
+    except AssertionError: table[player]=0 # add new player to the table and give him a score of 0
     return table
 
 def updatescore(player, table, score):
@@ -54,20 +51,28 @@ def updatescore(player, table, score):
 
 def wplayersdata(path,table):
     with open(path,"wb") as fscores:
-        my_pickler=pickle.pickler(fscores)
+        my_pickler=pickle.Pickler(fscores)
         my_pickler.dump(table)
     return None
 
 def lemot():
-    wd=input("Choisissez un mot [not case sensitive] a faire deviner, ou alors laissez vide pour obtenir un mot aleatoirement:")
-    if wd =="":
-        with open(os.getcwd()+"//lejeudupendumots","r") as mots:
-            
-            wd=mots.read().split("\n")#liste tous les mots
-            wd=wd[random.randrange(0, len(wd))]#choisi un mot aleatoirement
-    else:
-        with open(os.getcwd()+"//lejeudupendumots","a") as mots:
-            mots.write(wd)
+    message = "Choisissez un mot [not case sensitive] a faire deviner, ou alors laissez vide pour obtenir un mot aleatoirement:"\
+    if os.path.exists(os.path.join(os.path.dirname(__file__),"lejeudupendumots")) else \
+    "Choisissez un mot [not case sensitive] a faire deviner:"
+    while True:
+        wd=input(message).lower()
+        if wd=="" and os.path.exists(os.path.join(os.path.dirname(__file__),"lejeudupendumots")):
+            with open(os.path.join(os.path.dirname(__file__),"lejeudupendumots"),"r") as mots:
+                wd=[m.strip("\r\n\t ") for m in mots.readlines()]#liste tous les mots
+                wd=wd[random.randrange(0, len(wd)-1)]#choisi un mot aleatoirement
+            break
+        elif wd=="" and not os.path.exists(os.path.join(os.path.dirname(__file__),"lejeudupendumots")):
+            message = "Choisissez un mot [not case sensitive] a faire deviner (pas de base de donnees de mots disponible, vous DEVEZ donner un mot):"
+            continue
+        else:
+            with open(os.path.join(os.path.dirname(__file__),"lejeudupendumots"),"a") as mots:
+                mots.write('\n' + wd)
+            break
     return wd
 
 # def lejeu(player,table,path,lemot):
@@ -183,9 +188,10 @@ def pendu(score):
 
 if __name__=="__main__":
     
+    playerprompt()
     lejeu("aime")
-    #playerprompt()
     #pendu(9)
+    print(os.path.dirname(__file__))
     
     
     
