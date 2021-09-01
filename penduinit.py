@@ -16,7 +16,7 @@ def lejeudupenduinit():
     # mot=""
     while True:
         
-        qYno = input("Type 'Q' to quit: ")
+        qYno = input("Press 'Enter' to play or Type 'Q' to quit: ")
         if qYno.upper()=="Q":
             break
         

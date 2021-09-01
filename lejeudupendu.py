@@ -62,9 +62,11 @@ def lemot():
     while True:
         wd=input(message).lower()
         if wd=="" and os.path.exists(os.path.join(os.path.dirname(__file__),"lejeudupendumots")):
-            with open(os.path.join(os.path.dirname(__file__),"lejeudupendumots"),"r") as mots:
-                wd=[m.strip("\r\n\t ") for m in mots.readlines()]#liste tous les mots
-                wd=wd[random.randrange(0, len(wd)-1)]#choisi un mot aleatoirement
+            while len(wd)<3:
+                with open(os.path.join(os.path.dirname(__file__),"lejeudupendumots"),"r") as mots:
+                    wd=[m.strip("\r\n\t ") for m in mots.readlines()]#liste tous les mots
+                    wd=wd[random.randrange(0, len(wd)-1)]#choisi un mot aleatoirement
+
             break
         elif wd=="" and not os.path.exists(os.path.join(os.path.dirname(__file__),"lejeudupendumots")):
             message = "Choisissez un mot [not case sensitive] a faire deviner (pas de base de donnees de mots disponible, vous DEVEZ donner un mot):"
